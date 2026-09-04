@@ -87,3 +87,64 @@ tUsuario* sesion_juego(){
     system("cls");
     return usuario;
 }
+
+tPieza* generar_pieza(){
+    int tipo_pieza;
+    tPieza* pieza = malloc(sizeof(tPieza));
+    if(!pieza)
+        return NULL;
+    tipo_pieza = rand()%7+1;
+    pieza->posX = 3;
+    pieza->posY = 0;
+    pieza->tipo = tipo_pieza;
+
+    switch(tipo_pieza){
+        case 1: //2x2
+            memcpy(pieza->matriz_forma, MOLDE_O, sizeof(int)*16);
+            break;
+        case 2: //3x1 centro
+            memcpy(pieza->matriz_forma, MOLDE_T, sizeof(int)*16);
+            break;
+        case 3: //3x1 derecha
+            memcpy(pieza->matriz_forma, MOLDE_L, sizeof(int)*16);
+            break;
+        case 4: //3x1 izquierda
+            memcpy(pieza->matriz_forma, MOLDE_J, sizeof(int)*16);
+            break;
+        case 5: //2x2 cruzado
+            memcpy(pieza->matriz_forma, MOLDE_S, sizeof(int)*16);
+            break;
+        case 6: //2x2 cruzado al revés
+            memcpy(pieza->matriz_forma, MOLDE_Z, sizeof(int)*16);
+            break;
+        case 7: //4x1
+            memcpy(pieza->matriz_forma, MOLDE_I, sizeof(int)*16);
+            break;
+    }
+    return pieza;
+}
+
+void mostrar_pieza(tPieza* pieza){
+    int i, j, x_consola, y_consola;
+    int offset_x = 10;
+    int offset_y = 2;
+
+    for(i=0; i<4; i++)
+        for(j=0; j<4; j++)
+            if(pieza->matriz_forma[i][j] != 0){
+                x_consola = offset_x + (pieza->posX+j)*2;
+                y_consola = offset_y + pieza->posY+i;
+                gotoxy(x_consola, y_consola);
+                printf("[]");
+            }
+}
+
+bool verificar_derrota(int mat[CANT_FIL][CANT_COL], tPieza* pieza){
+    int i, j;
+    for(i=0; i<4; i++)
+        for(j=0; j<4; j++)
+            if(pieza->matriz_forma[i][j] != 0)
+                if(mat[pieza->posY + i][pieza->posX +j] != 0)
+                    return true; //game over
+    return false;
+}
