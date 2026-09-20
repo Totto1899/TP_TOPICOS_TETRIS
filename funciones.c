@@ -22,7 +22,7 @@ void mostrar_matriz(int mat[CANT_FIL][CANT_COL]){
     }
 }
 
-void mostrar_interfaz(){
+void mostrar_partida(){
     int y;
     gotoxy(35, 5);
     printf("T E T R I S");
@@ -147,4 +147,136 @@ bool verificar_derrota(int mat[CANT_FIL][CANT_COL], tPieza* pieza){
                 if(mat[pieza->posY + i][pieza->posX +j] != 0)
                     return true; //game over
     return false;
+}
+
+///NUEVAS FUNCIONES IMPLEMENTADAS (20/09/26)
+
+// Retorna true si se puede mover, false si choca con algo
+bool es_movimiento_valido(int mat[CANT_FIL][CANT_COL], tPieza* pieza, int movX, int movY, int matriz_prueba[4][4]) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (matriz_prueba[i][j] != 0) { // Si hay un bloque de la pieza
+                int nuevoX = pieza->posX + j + movX;
+                int nuevoY = pieza->posY + i + movY;
+
+                // 1. Choca contra las paredes (izquierda o derecha)?
+                if (nuevoX < 0 || nuevoX >= CANT_COL) return false;
+
+                // 2. Choca contra el piso?
+                if (nuevoY >= CANT_FIL) return false;
+
+                // 3. Choca contra otra pieza ya fijada en el tablero?
+                if (nuevoY >= 0 && mat[nuevoY][nuevoX] != 0) return false;
+            }
+        }
+    }
+    return true;
+}
+
+void fijar_pieza(int mat[CANT_FIL][CANT_COL], tPieza* pieza) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (pieza->matriz_forma[i][j] != 0) {
+                // Copiamos el número del bloque a la matriz principal
+                mat[pieza->posY + i][pieza->posX + j] = pieza->matriz_forma[i][j];
+            }
+        }
+    }
+}
+
+void intentar_rotar(int mat[CANT_FIL][CANT_COL], tPieza* pieza) {
+    int matriz_temporal[4][4] = {0};
+
+    // Algoritmo para rotar 90 grados a la derecha
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            matriz_temporal[j][3 - i] = pieza->matriz_forma[i][j];
+        }
+    }
+
+    // Verificamos si la pieza ROTADA cabe en la posición actual
+    if (es_movimiento_valido(mat, pieza, 0, 0, matriz_temporal)) {
+        // Si es válido, aplicamos los cambios a la pieza real
+        memcpy(pieza->matriz_forma, matriz_temporal, sizeof(int)*16);
+    }
+}
+
+void eliminar_filas_llenas(int mat[CANT_FIL][CANT_COL], tUsuario* usuario) {
+    int filas_borradas = 0;
+
+    for (int i = CANT_FIL - 1; i >= 0; i--) {
+        bool fila_llena = true;
+        for (int j = 0; j < CANT_COL; j++) {
+            if (mat[i][j] == 0) {
+                fila_llena = false; // Hay un hueco, no está llena
+                break;
+            }
+        }
+
+        if (fila_llena) {
+            // Bajar todas las filas que están arriba de 'i'
+            for (int k = i; k > 0; k--) {
+                for (int j = 0; j < CANT_COL; j++) {
+                    mat[k][j] = mat[k-1][j];
+                }
+            }
+            // La primera fila (índice 0) se llena de ceros
+            for (int j = 0; j < CANT_COL; j++) mat[0][j] = 0;
+
+            filas_borradas++;
+            i++; // Volvemos a revisar esta misma fila porque bajó una nueva
+        }
+    }
+
+    // Lógica para sumar puntos al usuario (ej. 100 puntos por línea, o más si hace combo de 4)
+    if (filas_borradas > 0) {
+        usuario->puntos += (filas_borradas * 100);
+    }
+}
+
+int mostrar_menu_interactivo() {
+    int opcion_seleccionada = 0;
+    int tecla;
+
+    while (1) {
+        system("cls");
+        gotoxy(35, 5);
+        printf("T E T R I S");
+
+        gotoxy(30, 8);
+        if (opcion_seleccionada == 0) {
+            printf("%c JUGAR %c", 175, 174);
+        } else {
+            printf("  JUGAR  ");
+        }
+
+        gotoxy(30, 10);
+        if (opcion_seleccionada == 1) {
+            printf("%c TABLA HISTORICA DE PUNTOS %c", 175, 174);
+        } else {
+            printf("  TABLA HISTORICA DE PUNTOS  ");
+        }
+
+        gotoxy(30, 12);
+        if (opcion_seleccionada == 2) {
+            printf("%c SALIR %c", 175, 174);
+        } else {
+            printf("  SALIR  ");
+        }
+
+        tecla = getch();
+        
+        if (tecla == 224 || tecla == 0) { 
+            tecla = getch();
+            if (tecla == 72) {
+                opcion_seleccionada--;
+                if (opcion_seleccionada < 0) opcion_seleccionada = 2;
+            } else if (tecla == 80) {
+                opcion_seleccionada++;
+                if (opcion_seleccionada > 2) opcion_seleccionada = 0;
+            }
+        } else if (tecla == 13) {
+            return opcion_seleccionada + 1;
+        }
+    }
 }
