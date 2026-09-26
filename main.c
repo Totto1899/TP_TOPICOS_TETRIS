@@ -3,25 +3,25 @@
 int main(int argc, char* argv[]){
     srand(time(NULL));
     system("mode con cols=80 lines=30");
-    
+
     int opcion_menu;
-    
+
     while(1) {
         opcion_menu = mostrar_menu_interactivo();
-        
+
         if (opcion_menu == 3) {
             break; // SALIR
         } else if (opcion_menu == 2) {
             // TABLA HISTORICA DE PUNTOS
-            system("cls"); // Limpiamos la pantalla antes de mostrar la tabla
+            system("cls");
             mostrar_tabla_puntos();
-            gotoxy(5, 20); // Posicionamos el mensaje más abajo para no pisar la tabla
+            gotoxy(5, 20);
             printf("Presione cualquier tecla para volver al menu...");
-            getch(); // Esperamos a que el usuario toque una tecla
+            getch();
         } else if (opcion_menu == 1) {
             // JUGAR
             system("cls");
-            
+
             tUsuario* usuario = sesion_juego();
             if(!usuario){
                 printf("Sin memoria disponible.\n");
@@ -33,7 +33,7 @@ int main(int argc, char* argv[]){
             tPieza* pieza_siguiente;
             int mat[CANT_FIL][CANT_COL]={0};
             int contador_gravedad = 0;
-            int velocidad = 10; // Cae cada 10 ciclos (aprox 500ms)
+            int velocidad = 10; // La pieza cae cada 10 ciclos (aprox 500ms)
             char tecla;
 
             mostrar_partida();
@@ -54,14 +54,14 @@ int main(int argc, char* argv[]){
                 mostrar_pieza(pieza);
 
                 // Limpiamos el área de la próxima pieza y la dibujamos
-                for(int i=0; i<4; i++){
-                    gotoxy(40, 14+i);
-                    printf("        "); // Borramos lo anterior
+                for(int i = 0; i < 4; i++){
+                    gotoxy(38, 14 + i);
+                    printf("           ");
                 }
-                for(int i=0; i<4; i++){
-                    for(int j=0; j<4; j++){
+                for(int i = 0; i < 4; i++){
+                    for(int j = 0; j < 4; j++){
                         if(pieza_siguiente->matriz_forma[i][j] != 0){
-                            gotoxy(40 + j*2, 14 + i);
+                            gotoxy(38 + j*2, 14 + i);
                             printf("[]");
                         }
                     }
@@ -122,7 +122,7 @@ int main(int argc, char* argv[]){
             // Mensaje de fin de juego
             gotoxy(10, CANT_FIL + 4);
             printf("--- G A M E  O V E R ---");
-            Sleep(2000); // Pausamos 2 segundos para que el usuario lo vea
+            Sleep(2000);
 
             actualizar_tabla_puntos(usuario);
             free(usuario);
@@ -130,7 +130,7 @@ int main(int argc, char* argv[]){
             free(pieza_siguiente);
         }
     }
-    
+
     system("cls");
     gotoxy(0, 5);
     printf("Gracias por jugar!\n");

@@ -39,9 +39,10 @@ typedef struct{
 #define MOLDE_I (int[4][4]){ {0, 0, 0, 0}, {7, 7, 7, 7}, {0, 0, 0, 0}, {0, 0, 0, 0} }
 
 ///FUNCIONES
+int mostrar_menu_interactivo();
 void gotoxy(int x, int y);
 void mostrar_matriz(int mat[CANT_FIL][CANT_COL]);
-void mostrar_partida(); //El viejo mostrar_interfaz pasa a ser mostrar_partida
+void mostrar_partida();
 void actualizar_puntaje(size_t puntos);
 tPieza* generar_pieza();
 void mostrar_pieza(tPieza* pieza);
@@ -51,10 +52,10 @@ int mostrar_tabla_puntos();
 int actualizar_tabla_puntos(tUsuario* usuario);
 tUsuario* sesion_juego();
 
-///NUEVAS FUNCIONES IMPLEMENTADAS (20/09/26)
 bool es_movimiento_valido(int mat[CANT_FIL][CANT_COL], tPieza* pieza, int movX, int movY, int matriz_prueba[4][4]);
 void fijar_pieza(int mat[CANT_FIL][CANT_COL], tPieza* pieza);
 void intentar_rotar(int mat[CANT_FIL][CANT_COL], tPieza* pieza);
 void eliminar_filas_llenas(int mat[CANT_FIL][CANT_COL], tUsuario* usuario);
-int mostrar_menu_interactivo();
+
+
 #endif // BIBLIOTECA_H_INCLUDED

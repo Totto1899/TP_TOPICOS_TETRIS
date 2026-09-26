@@ -9,13 +9,12 @@ void gotoxy(int x, int y) {
 }
 
 void mostrar_matriz(int mat[CANT_FIL][CANT_COL]){
-    int i,j;
     int offset_x = 10;
     int offset_y = 2;
-    for(i=0; i<CANT_FIL; i++){
-        gotoxy(offset_x, offset_y+i);
-        for(j=0; j<CANT_COL; j++)
-            if(mat[i][j]==0)
+    for(int i = 0; i < CANT_FIL; i++){
+        gotoxy(offset_x, offset_y + i);
+        for(int j = 0; j < CANT_COL; j++)
+            if( mat[i][j] == 0 )
                 printf(". ");
             else
                 printf("[]");
@@ -30,7 +29,7 @@ void mostrar_partida(){
     printf("PUNTAJE:");
     gotoxy(35, 12);
     printf("PROXIMA PIEZA:");
-    for(y=2; y<CANT_FIL + 2; y++){
+    for( y = 2; y < CANT_FIL + 2; y++){
         gotoxy(8, y);
         printf("|");
         gotoxy(31, y);
@@ -38,6 +37,10 @@ void mostrar_partida(){
     }
     gotoxy(8, CANT_FIL + 2);
     printf("------------------------");
+    gotoxy(35, 19);
+    printf("MOVER PIEZA: A y D");
+    gotoxy(35, 20);
+    printf("ROTAR PIEZA: W");
 }
 
 void actualizar_puntaje(size_t puntos){
@@ -57,7 +60,7 @@ int mostrar_tabla_puntos(){
     printf("USER");
     gotoxy(20, 7);
     printf("PUNTOS");
-    while(fread(&usuario, sizeof(tUsuario), 1, pf)==1){
+    while(fread(&usuario, sizeof(tUsuario), 1, pf) == 1){
         gotoxy(5, 9+i);
         printf("%s", usuario.nombre);
         gotoxy(20, 9+i);
@@ -93,46 +96,46 @@ tPieza* generar_pieza(){
     tPieza* pieza = malloc(sizeof(tPieza));
     if(!pieza)
         return NULL;
-    tipo_pieza = rand()%7+1;
+    tipo_pieza = rand() % 7 + 1;
     pieza->posX = 3;
     pieza->posY = 0;
     pieza->tipo = tipo_pieza;
 
     switch(tipo_pieza){
         case 1: //2x2
-            memcpy(pieza->matriz_forma, MOLDE_O, sizeof(int)*16);
+            memcpy(pieza->matriz_forma, MOLDE_O, sizeof(int) * 16);
             break;
         case 2: //3x1 centro
-            memcpy(pieza->matriz_forma, MOLDE_T, sizeof(int)*16);
+            memcpy(pieza->matriz_forma, MOLDE_T, sizeof(int) * 16);
             break;
         case 3: //3x1 derecha
-            memcpy(pieza->matriz_forma, MOLDE_L, sizeof(int)*16);
+            memcpy(pieza->matriz_forma, MOLDE_L, sizeof(int) * 16);
             break;
         case 4: //3x1 izquierda
-            memcpy(pieza->matriz_forma, MOLDE_J, sizeof(int)*16);
+            memcpy(pieza->matriz_forma, MOLDE_J, sizeof(int) * 16);
             break;
         case 5: //2x2 cruzado
-            memcpy(pieza->matriz_forma, MOLDE_S, sizeof(int)*16);
+            memcpy(pieza->matriz_forma, MOLDE_S, sizeof(int) * 16);
             break;
         case 6: //2x2 cruzado al revés
-            memcpy(pieza->matriz_forma, MOLDE_Z, sizeof(int)*16);
+            memcpy(pieza->matriz_forma, MOLDE_Z, sizeof(int) * 16);
             break;
         case 7: //4x1
-            memcpy(pieza->matriz_forma, MOLDE_I, sizeof(int)*16);
+            memcpy(pieza->matriz_forma, MOLDE_I, sizeof(int) * 16);
             break;
     }
     return pieza;
 }
 
 void mostrar_pieza(tPieza* pieza){
-    int i, j, x_consola, y_consola;
+    int x_consola, y_consola;
     int offset_x = 10;
     int offset_y = 2;
 
-    for(i=0; i<4; i++)
-        for(j=0; j<4; j++)
+    for(int i = 0; i < 4; i++)
+        for(int j = 0; j < 4; j++)
             if(pieza->matriz_forma[i][j] != 0){
-                x_consola = offset_x + (pieza->posX+j)*2;
+                x_consola = offset_x + (pieza->posX+j) * 2;
                 y_consola = offset_y + pieza->posY+i;
                 gotoxy(x_consola, y_consola);
                 printf("[]");
@@ -140,18 +143,14 @@ void mostrar_pieza(tPieza* pieza){
 }
 
 bool verificar_derrota(int mat[CANT_FIL][CANT_COL], tPieza* pieza){
-    int i, j;
-    for(i=0; i<4; i++)
-        for(j=0; j<4; j++)
+    for(int i = 0; i < 4; i++)
+        for(int j = 0; j < 4; j++)
             if(pieza->matriz_forma[i][j] != 0)
                 if(mat[pieza->posY + i][pieza->posX +j] != 0)
                     return true; //game over
     return false;
 }
 
-///NUEVAS FUNCIONES IMPLEMENTADAS (20/09/26)
-
-// Retorna true si se puede mover, false si choca con algo
 bool es_movimiento_valido(int mat[CANT_FIL][CANT_COL], tPieza* pieza, int movX, int movY, int matriz_prueba[4][4]) {
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
@@ -174,31 +173,25 @@ bool es_movimiento_valido(int mat[CANT_FIL][CANT_COL], tPieza* pieza, int movX, 
 }
 
 void fijar_pieza(int mat[CANT_FIL][CANT_COL], tPieza* pieza) {
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (pieza->matriz_forma[i][j] != 0) {
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            if (pieza->matriz_forma[i][j] != 0)
                 // Copiamos el número del bloque a la matriz principal
                 mat[pieza->posY + i][pieza->posX + j] = pieza->matriz_forma[i][j];
-            }
-        }
-    }
 }
 
 void intentar_rotar(int mat[CANT_FIL][CANT_COL], tPieza* pieza) {
     int matriz_temporal[4][4] = {0};
 
     // Algoritmo para rotar 90 grados a la derecha
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
             matriz_temporal[j][3 - i] = pieza->matriz_forma[i][j];
-        }
-    }
 
     // Verificamos si la pieza ROTADA cabe en la posición actual
-    if (es_movimiento_valido(mat, pieza, 0, 0, matriz_temporal)) {
+    if (es_movimiento_valido(mat, pieza, 0, 0, matriz_temporal))
         // Si es válido, aplicamos los cambios a la pieza real
-        memcpy(pieza->matriz_forma, matriz_temporal, sizeof(int)*16);
-    }
+        memcpy(pieza->matriz_forma, matriz_temporal, sizeof(int) * 16);
 }
 
 void eliminar_filas_llenas(int mat[CANT_FIL][CANT_COL], tUsuario* usuario) {
@@ -265,8 +258,8 @@ int mostrar_menu_interactivo() {
         }
 
         tecla = getch();
-        
-        if (tecla == 224 || tecla == 0) { 
+
+        if (tecla == 224 || tecla == 0) {
             tecla = getch();
             if (tecla == 72) {
                 opcion_seleccionada--;
