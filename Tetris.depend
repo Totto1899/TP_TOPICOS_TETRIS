@@ -1,8 +1,8 @@
 # depslib dependency file v1.0
-1788373048 source:c:\users\jorge\onedrive\desktop\tp_topicos\tetris\funciones.c
+1792100631 source:c:\users\jorge\onedrive\desktop\tp_topicos\tetris\funciones.c
 	"biblioteca.h"
 
-1788372979 c:\users\jorge\onedrive\desktop\tp_topicos\tetris\biblioteca.h
+1790687740 c:\users\jorge\onedrive\desktop\tp_topicos\tetris\biblioteca.h
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -11,7 +11,7 @@
 	<conio.h>
 	<windows.h>
 
-1788373096 source:c:\users\jorge\onedrive\desktop\tp_topicos\tetris\main.c
+1792100379 source:c:\users\jorge\onedrive\desktop\tp_topicos\tetris\main.c
 	"biblioteca.h"
 
 1789920729 source:c:\users\usuario\onedrive\desktop\cupo\unlam\materias\tópicos de programación\tp_2c_2026\tp_topicos_tetris\funciones.c

@@ -41,6 +41,10 @@ void mostrar_partida(){
     printf("MOVER PIEZA: A y D");
     gotoxy(35, 20);
     printf("ROTAR PIEZA: W");
+    gotoxy(35, 21);
+    printf("CAIDA ACELERADA: S");
+    gotoxy(35, 22);
+    printf("CAIDA INSTANTANEA: ESPACIO");
 }
 
 void actualizar_puntaje(size_t puntos){
@@ -180,7 +184,9 @@ void fijar_pieza(int mat[CANT_FIL][CANT_COL], tPieza* pieza) {
                 mat[pieza->posY + i][pieza->posX + j] = pieza->matriz_forma[i][j];
 }
 
-void intentar_rotar(int mat[CANT_FIL][CANT_COL], tPieza* pieza) {
+void intentar_rotar(int mat[CANT_FIL][CANT_COL], tPieza* pieza){
+    if(pieza->tipo == 1) //si es un cuadrado no se rota, para evitar movimientos raros.
+        return;
     int matriz_temporal[4][4] = {0};
 
     // Algoritmo para rotar 90 grados a la derecha
@@ -222,8 +228,19 @@ void eliminar_filas_llenas(int mat[CANT_FIL][CANT_COL], tUsuario* usuario) {
     }
 
     // Lógica para sumar puntos al usuario (ej. 100 puntos por línea, o más si hace combo de 4)
-    if (filas_borradas > 0) {
-        usuario->puntos += (filas_borradas * 100);
+    switch(filas_borradas) {
+        case 1:
+            usuario->puntos += 100;
+            break;
+        case 2:
+            usuario->puntos += 300;
+            break;
+        case 3:
+            usuario->puntos += 500;
+            break;
+        case 4:
+            usuario->puntos += 1000;
+            break;
     }
 }
 

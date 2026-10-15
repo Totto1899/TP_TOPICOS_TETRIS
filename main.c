@@ -89,6 +89,11 @@ int main(int argc, char* argv[]){
                             case 'w':
                                 intentar_rotar(mat, pieza);
                                 break;
+                            case ' ': //Caída instantanea
+                                while(es_movimiento_valido(mat, pieza, 0, 1, pieza->matriz_forma))
+                                    pieza->posY++;
+                                contador_gravedad = velocidad;
+                                break;
                         }
                     }
                 }
@@ -117,6 +122,13 @@ int main(int argc, char* argv[]){
 
                 Sleep(50);
                 actualizar_puntaje(usuario->puntos);
+
+                if(usuario->puntos >= 5000)
+                    velocidad = 2;
+                else if(usuario->puntos >= 3000)
+                    velocidad = 4;
+                else if(usuario->puntos >= 1000)
+                    velocidad = 7;
             }
 
             // Mensaje de fin de juego
