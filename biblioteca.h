@@ -29,6 +29,13 @@ typedef struct{
 #define ARCH_PUNTOS "tablaPuntaje.bin"
 #define ERR_AP -1
 
+///MENU
+#define CANT_OPCIONES 3
+#define TECLA_ESPECIAL 224
+#define FLECHA_ARRIBA 72
+#define FLECHA_ABAJO 80
+#define TECLA_ENTER 13
+
 ///MOLDES DE LAS PIEZAS
 #define MOLDE_O (int[4][4]){ {0, 1, 1, 0}, {0, 1, 1, 0}, {0, 0, 0, 0}, {0, 0, 0, 0} }
 #define MOLDE_T (int[4][4]){ {0, 2, 0, 0}, {2, 2, 2, 0}, {0, 0, 0, 0}, {0, 0, 0, 0} }
@@ -46,7 +53,6 @@ void mostrar_partida();
 void actualizar_puntaje(size_t puntos);
 tPieza* generar_pieza();
 void mostrar_pieza(tPieza* pieza);
-bool verificar_derrota(int mat[CANT_FIL][CANT_COL], tPieza* pieza);
 
 int mostrar_tabla_puntos();
 int actualizar_tabla_puntos(tUsuario* usuario);

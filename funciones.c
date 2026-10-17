@@ -49,7 +49,7 @@ void mostrar_partida(){
 
 void actualizar_puntaje(size_t puntos){
     gotoxy(44, 8);
-    printf("%zu", puntos);
+    printf("%llu", (unsigned long long)puntos);
 }
 
 int mostrar_tabla_puntos(){
@@ -68,7 +68,7 @@ int mostrar_tabla_puntos(){
         gotoxy(5, 9+i);
         printf("%s", usuario.nombre);
         gotoxy(20, 9+i);
-        printf("%zu", usuario.puntos);
+        printf("%llu", (unsigned long long)usuario.puntos);
         i++;
     }
     fclose(pf);
@@ -76,18 +76,20 @@ int mostrar_tabla_puntos(){
 }
 
 int actualizar_tabla_puntos(tUsuario* usuario){
-    FILE* pf = fopen(ARCH_PUNTOS, "a+b");
-    if(!pf)
-        return ERR_AP;
+    if(!usuario) return ERR_AP;
+
+    FILE* pf = fopen(ARCH_PUNTOS, "ab");
+    if(!pf) return ERR_AP;
+
     fwrite(usuario, sizeof(tUsuario), 1, pf);
     fclose(pf);
     return 0;
 }
 
 tUsuario* sesion_juego(){
-    tUsuario* usuario = malloc(sizeof(tUsuario));
-    if(!usuario)
-        return NULL;
+    tUsuario* usuario = calloc(1, sizeof(tUsuario));
+    if(!usuario) return NULL;
+
     printf("Ingrese su nombre para esta partida: ");
     scanf("%9s", usuario->nombre);
     usuario->puntos = 0;
@@ -127,6 +129,9 @@ tPieza* generar_pieza(){
         case 7: //4x1
             memcpy(pieza->matriz_forma, MOLDE_I, sizeof(int) * 16);
             break;
+        default:
+            free(pieza);
+            return NULL;
     }
     return pieza;
 }
@@ -144,15 +149,6 @@ void mostrar_pieza(tPieza* pieza){
                 gotoxy(x_consola, y_consola);
                 printf("[]");
             }
-}
-
-bool verificar_derrota(int mat[CANT_FIL][CANT_COL], tPieza* pieza){
-    for(int i = 0; i < 4; i++)
-        for(int j = 0; j < 4; j++)
-            if(pieza->matriz_forma[i][j] != 0)
-                if(mat[pieza->posY + i][pieza->posX +j] != 0)
-                    return true; //game over
-    return false;
 }
 
 bool es_movimiento_valido(int mat[CANT_FIL][CANT_COL], tPieza* pieza, int movX, int movY, int matriz_prueba[4][4]) {
@@ -180,7 +176,6 @@ void fijar_pieza(int mat[CANT_FIL][CANT_COL], tPieza* pieza) {
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
             if (pieza->matriz_forma[i][j] != 0)
-                // Copiamos el número del bloque a la matriz principal
                 mat[pieza->posY + i][pieza->posX + j] = pieza->matriz_forma[i][j];
 }
 
@@ -214,13 +209,12 @@ void eliminar_filas_llenas(int mat[CANT_FIL][CANT_COL], tUsuario* usuario) {
 
         if (fila_llena) {
             // Bajar todas las filas que están arriba de 'i'
-            for (int k = i; k > 0; k--) {
-                for (int j = 0; j < CANT_COL; j++) {
+            for (int k = i; k > 0; k--) 
+                for (int j = 0; j < CANT_COL; j++) 
                     mat[k][j] = mat[k-1][j];
-                }
-            }
             // La primera fila (índice 0) se llena de ceros
-            for (int j = 0; j < CANT_COL; j++) mat[0][j] = 0;
+            for (int j = 0; j < CANT_COL; j++) 
+                mat[0][j] = 0;
 
             filas_borradas++;
             i++; // Volvemos a revisar esta misma fila porque bajó una nueva
@@ -245,6 +239,7 @@ void eliminar_filas_llenas(int mat[CANT_FIL][CANT_COL], tUsuario* usuario) {
 }
 
 int mostrar_menu_interactivo() {
+    const char* opciones[CANT_OPCIONES] = {"JUGAR", "TABLA HISTORICA DE PUNTOS", "SALIR"};
     int opcion_seleccionada = 0;
     int tecla;
 
@@ -253,39 +248,26 @@ int mostrar_menu_interactivo() {
         gotoxy(35, 5);
         printf("T E T R I S");
 
-        gotoxy(30, 8);
-        if (opcion_seleccionada == 0) {
-            printf("%c JUGAR %c", 175, 174);
-        } else {
-            printf("  JUGAR  ");
-        }
-
-        gotoxy(30, 10);
-        if (opcion_seleccionada == 1) {
-            printf("%c TABLA HISTORICA DE PUNTOS %c", 175, 174);
-        } else {
-            printf("  TABLA HISTORICA DE PUNTOS  ");
-        }
-
-        gotoxy(30, 12);
-        if (opcion_seleccionada == 2) {
-            printf("%c SALIR %c", 175, 174);
-        } else {
-            printf("  SALIR  ");
+        for (int i = 0; i < CANT_OPCIONES; i++) {
+            gotoxy(30, 8 + i * 2);
+            if (i == opcion_seleccionada)
+                printf("%c %s %c", 175, *(opciones + i), 174);
+            else
+                printf("  %s  ", *(opciones + i));
         }
 
         tecla = getch();
 
-        if (tecla == 224 || tecla == 0) {
+        if (tecla == TECLA_ESPECIAL || tecla == 0) {
             tecla = getch();
-            if (tecla == 72) {
+            if (tecla == FLECHA_ARRIBA) {
                 opcion_seleccionada--;
-                if (opcion_seleccionada < 0) opcion_seleccionada = 2;
-            } else if (tecla == 80) {
+                if (opcion_seleccionada < 0) opcion_seleccionada = CANT_OPCIONES - 1;
+            } else if (tecla == FLECHA_ABAJO) {
                 opcion_seleccionada++;
-                if (opcion_seleccionada > 2) opcion_seleccionada = 0;
+                if (opcion_seleccionada > CANT_OPCIONES - 1) opcion_seleccionada = 0;
             }
-        } else if (tecla == 13) {
+        } else if (tecla == TECLA_ENTER) {
             return opcion_seleccionada + 1;
         }
     }

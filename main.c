@@ -46,7 +46,7 @@ int main(int argc, char* argv[]){
                     exit(1);
                 }
 
-            if(verificar_derrota(mat, pieza))
+            if(!es_movimiento_valido(mat, pieza, 0, 0, pieza->matriz_forma))
                 cond_victoria = 0;
 
             while(cond_victoria==1){
@@ -113,9 +113,8 @@ int main(int argc, char* argv[]){
                         pieza_siguiente = generar_pieza(); // Generamos una nueva
 
                         // Si la nueva pieza choca ni bien nace, perdimos
-                        if (!es_movimiento_valido(mat, pieza, 0, 0, pieza->matriz_forma)) {
+                        if ( !pieza_siguiente || !es_movimiento_valido(mat, pieza, 0, 0, pieza->matriz_forma) ) 
                             cond_victoria = 0;
-                        }
                     }
                     contador_gravedad = 0; // Reiniciamos el contador de gravedad
                 }
