@@ -27,6 +27,8 @@ typedef struct{
 #define CANT_FIL 20
 #define CANT_COL 10
 #define ARCH_PUNTOS "tablaPuntaje.bin"
+#define ARCH_TEMP "tablaPuntaje.tmp"
+#define TOP_PUNTOS 10
 #define ERR_AP -1
 
 ///MENU

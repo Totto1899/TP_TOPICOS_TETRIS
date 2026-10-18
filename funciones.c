@@ -64,7 +64,7 @@ int mostrar_tabla_puntos(){
     printf("USER");
     gotoxy(20, 7);
     printf("PUNTOS");
-    while(fread(&usuario, sizeof(tUsuario), 1, pf) == 1){
+    while(i < TOP_PUNTOS && fread(&usuario, sizeof(tUsuario), 1, pf) == 1){
         gotoxy(5, 9+i);
         printf("%s", usuario.nombre);
         gotoxy(20, 9+i);
@@ -76,13 +76,35 @@ int mostrar_tabla_puntos(){
 }
 
 int actualizar_tabla_puntos(tUsuario* usuario){
+    tUsuario aux;
+    int insertado = 0;
+
     if(!usuario) return ERR_AP;
 
-    FILE* pf = fopen(ARCH_PUNTOS, "ab");
-    if(!pf) return ERR_AP;
+    FILE* pf = fopen(ARCH_PUNTOS, "rb"); // puede no existir en la primera partida
+    FILE* pt = fopen(ARCH_TEMP, "wb");
+    if(!pt){
+        if(pf) fclose(pf);
+        return ERR_AP;
+    }
 
-    fwrite(usuario, sizeof(tUsuario), 1, pf);
-    fclose(pf);
+    if(pf){
+        while(fread(&aux, sizeof(tUsuario), 1, pf) == 1){
+            if(!insertado && usuario->puntos > aux.puntos){
+                fwrite(usuario, sizeof(tUsuario), 1, pt); // entra antes del primero que tiene menos puntos
+                insertado = 1;
+            }
+            fwrite(&aux, sizeof(tUsuario), 1, pt);
+        }
+        fclose(pf);
+    }
+    if(!insertado) // es el puntaje más bajo, o el primero de la tabla
+        fwrite(usuario, sizeof(tUsuario), 1, pt);
+    fclose(pt);
+
+    remove(ARCH_PUNTOS); // en Windows rename falla si el destino ya existe
+    if(rename(ARCH_TEMP, ARCH_PUNTOS) != 0)
+        return ERR_AP;
     return 0;
 }
 
@@ -92,6 +114,7 @@ tUsuario* sesion_juego(){
 
     printf("Ingrese su nombre para esta partida: ");
     scanf("%9s", usuario->nombre);
+    while(getchar() != '\n');
     usuario->puntos = 0;
     system("cls");
     return usuario;
@@ -209,11 +232,11 @@ void eliminar_filas_llenas(int mat[CANT_FIL][CANT_COL], tUsuario* usuario) {
 
         if (fila_llena) {
             // Bajar todas las filas que están arriba de 'i'
-            for (int k = i; k > 0; k--) 
-                for (int j = 0; j < CANT_COL; j++) 
+            for (int k = i; k > 0; k--)
+                for (int j = 0; j < CANT_COL; j++)
                     mat[k][j] = mat[k-1][j];
             // La primera fila (índice 0) se llena de ceros
-            for (int j = 0; j < CANT_COL; j++) 
+            for (int j = 0; j < CANT_COL; j++)
                 mat[0][j] = 0;
 
             filas_borradas++;
