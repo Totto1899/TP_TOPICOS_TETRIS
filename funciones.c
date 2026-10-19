@@ -281,15 +281,12 @@ int mostrar_menu_interactivo() {
 
         tecla = getch();
 
-        if (tecla == TECLA_ESPECIAL || tecla == 0) {
-            tecla = getch();
-            if (tecla == FLECHA_ARRIBA) {
-                opcion_seleccionada--;
-                if (opcion_seleccionada < 0) opcion_seleccionada = CANT_OPCIONES - 1;
-            } else if (tecla == FLECHA_ABAJO) {
-                opcion_seleccionada++;
-                if (opcion_seleccionada > CANT_OPCIONES - 1) opcion_seleccionada = 0;
-            }
+        if (tecla == TECLA_ARRIBA || tecla == TECLA_ARRIBA - 32) { // 'w' o 'W'
+            opcion_seleccionada--;
+            if (opcion_seleccionada < 0) opcion_seleccionada = CANT_OPCIONES - 1;
+        } else if (tecla == TECLA_ABAJO || tecla == TECLA_ABAJO - 32) { // 's' o 'S'
+            opcion_seleccionada++;
+            if (opcion_seleccionada > CANT_OPCIONES - 1) opcion_seleccionada = 0;
         } else if (tecla == TECLA_ENTER) {
             return opcion_seleccionada + 1;
         }

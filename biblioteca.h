@@ -33,9 +33,8 @@ typedef struct{
 
 ///MENU
 #define CANT_OPCIONES 3
-#define TECLA_ESPECIAL 224
-#define FLECHA_ARRIBA 72
-#define FLECHA_ABAJO 80
+#define TECLA_ARRIBA 'w'
+#define TECLA_ABAJO 's'
 #define TECLA_ENTER 13
 
 ///MOLDES DE LAS PIEZAS
